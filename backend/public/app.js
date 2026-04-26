@@ -1199,3 +1199,54 @@ async function removeCoTeacher(subjectId, teacherId) {
         alert('Failed to remove co-teacher');
     }
 }
+
+// ===================== Device Management =====================
+function openAddDeviceModal() {
+    showModal(`
+        <h3>Add New IoT Device</h3>
+        <p class="muted" style="margin-bottom: 16px;">Register a new scanning device to your account.</p>
+        
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div>
+                <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 4px;">Device ID (from code)</label>
+                <input type="text" id="new-device-id" placeholder="e.g., ROOM_3_SCANNER" style="width: 100%;">
+                <small class="muted">This must match the <code>DEVICE_ID</code> in your ESP32 code.</small>
+            </div>
+            <div>
+                <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 4px;">Description (Optional)</label>
+                <input type="text" id="new-device-desc" placeholder="e.g., Biology Lab - Station 1" style="width: 100%;">
+            </div>
+        </div>
+        
+        <div class="row actions" style="margin-top: 24px;">
+            <button class="btn" onclick="submitNewDevice()">Register Device</button>
+            <button class="btn secondary" onclick="closeModal()">Cancel</button>
+        </div>
+    `);
+}
+
+async function submitNewDevice() {
+    const device_id = document.getElementById('new-device-id').value;
+    const description = document.getElementById('new-device-desc').value;
+
+    if (!device_id) return alert('Please enter a Device ID');
+
+    try {
+        const res = await fetch(`${API_BASE}/iot/devices`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ device_id, description })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+            alert('Device registered successfully!');
+            closeModal();
+        } else {
+            alert(data.error || 'Failed to register device');
+        }
+    } catch (err) {
+        console.error(err);
+        alert('Network error while registering device');
+    }
+}

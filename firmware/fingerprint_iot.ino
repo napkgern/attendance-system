@@ -5,13 +5,13 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <ArduinoJson.h>
-
+#include <WiFiClientSecure.h>
 // ================= Config =================
 const char* ssid = "N";
 const char* password = "12345678"; // Replace with actual password if needed or keep existing
-const String SERVER_IP = "172.20.10.4";
-const String SERVER_PORT = "3000";
+const String BASE_URL = "https://iot-fingerprint-attendance.up.railway.app"; // No trailing slash
 const String DEVICE_ID = "ROOM_1_SCANNER";
+
 
 // Pins
 #define RX_PIN 16
@@ -156,9 +156,11 @@ void displayResult(String name, String status) {
 void checkModeFromServer() {
   if (WiFi.status() != WL_CONNECTED) return;
 
+  WiFiClientSecure client;
+  client.setInsecure();
   HTTPClient http;
-  String url = String("http://") + SERVER_IP + ":" + SERVER_PORT + "/api/iot/mode?device_id=" + DEVICE_ID;
-  http.begin(url);
+  String url = BASE_URL + "/api/iot/mode?device_id=" + DEVICE_ID;
+  http.begin(client, url);
   
   int httpCode = http.GET();
   if (httpCode == 200) {
@@ -198,9 +200,11 @@ void sendAttendance(int fid) {
   if (WiFi.status() != WL_CONNECTED) return;
   displayStatus("Sending...", "Please wait");
 
+  WiFiClientSecure client;
+  client.setInsecure();
   HTTPClient http;
-  String url = String("http://") + SERVER_IP + ":" + SERVER_PORT + "/api/attendance";
-  http.begin(url);
+  String url = BASE_URL + "/api/attendance";
+  http.begin(client, url);
   http.addHeader("Content-Type", "application/json");
 
   StaticJsonDocument<200> doc;
@@ -245,9 +249,11 @@ void sendAttendance(int fid) {
 void sendEnrollDone(String templateHex) {
   if (WiFi.status() != WL_CONNECTED) return;
   
+  WiFiClientSecure client;
+  client.setInsecure();
   HTTPClient http;
-  String url = String("http://") + SERVER_IP + ":" + SERVER_PORT + "/api/iot/enroll/done";
-  http.begin(url);
+  String url = BASE_URL + "/api/iot/enroll/done";
+  http.begin(client, url);
   http.addHeader("Content-Type", "application/json");
 
   // Use Dynamic as hex string is large
@@ -455,9 +461,11 @@ void downloadSessionTemplates(int sessionId) {
   if (WiFi.status() != WL_CONNECTED) return;
   displayStatus("Downloading...", "Templates");
   
+  WiFiClientSecure client;
+  client.setInsecure();
   HTTPClient http;
-  String url = String("http://") + SERVER_IP + ":" + SERVER_PORT + "/api/iot/templates?session_id=" + String(sessionId);
-  http.begin(url);
+  String url = BASE_URL + "/api/iot/templates?session_id=" + String(sessionId);
+  http.begin(client, url);
   int httpCode = http.GET();
   
   if (httpCode == 200) {

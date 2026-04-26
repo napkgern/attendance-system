@@ -4,13 +4,14 @@
 #include <Wire.h>
 #include <U8g2lib.h>
 #include <ArduinoJson.h>
+#include <WiFiClientSecure.h>
 
 // ================= Config =================
 const char* ssid = "N";
 const char* password = "12345678";
-const String SERVER_IP = "172.20.10.3";
-const String SERVER_PORT = "3000";
+const String BASE_URL = "https://iot-fingerprint-attendance.up.railway.app";
 const String DEVICE_ID = "ROOM_2_DUMMY"; // Update if testing on Room 1
+
 
 // Pins
 #define RX_PIN 16
@@ -166,9 +167,11 @@ void sendAttendance(int fid) {
   if (WiFi.status() != WL_CONNECTED) return;
   displayStatus("Sending...", "Wait");
 
+  WiFiClientSecure client;
+  client.setInsecure();
   HTTPClient http;
-  String url = String("http://") + SERVER_IP + ":" + SERVER_PORT + "/api/attendance";
-  http.begin(url);
+  String url = BASE_URL + "/api/attendance";
+  http.begin(client, url);
   http.addHeader("Content-Type", "application/json");
 
   StaticJsonDocument<200> doc;
@@ -299,9 +302,11 @@ void handleEnroll() {
 void sendEnrollDone(String templateHex) {
   if (WiFi.status() != WL_CONNECTED) return;
   
+  WiFiClientSecure client;
+  client.setInsecure();
   HTTPClient http;
-  String url = String("http://") + SERVER_IP + ":" + SERVER_PORT + "/api/iot/enroll/done";
-  http.begin(url);
+  String url = BASE_URL + "/api/iot/enroll/done";
+  http.begin(client, url);
   http.addHeader("Content-Type", "application/json");
 
   DynamicJsonDocument doc(2048);
@@ -325,9 +330,11 @@ void sendEnrollDone(String templateHex) {
 void checkModeFromServer() {
   if (WiFi.status() != WL_CONNECTED) return;
 
+  WiFiClientSecure client;
+  client.setInsecure();
   HTTPClient http;
-  String url = "http://" + SERVER_IP + ":" + SERVER_PORT + "/api/iot/mode?device_id=" + DEVICE_ID;
-  http.begin(url);
+  String url = BASE_URL + "/api/iot/mode?device_id=" + DEVICE_ID;
+  http.begin(client, url);
 
   int code = http.GET();
   if (code == 200) {
@@ -417,9 +424,11 @@ void downloadSessionTemplates(int sessionId) {
   if (WiFi.status() != WL_CONNECTED) return;
   displayStatus("Loading", "Templates");
   
+  WiFiClientSecure client;
+  client.setInsecure();
   HTTPClient http;
-  String url = String("http://") + SERVER_IP + ":" + SERVER_PORT + "/api/iot/templates?session_id=" + String(sessionId);
-  http.begin(url);
+  String url = BASE_URL + "/api/iot/templates?session_id=" + String(sessionId);
+  http.begin(client, url);
   int httpCode = http.GET();
   
   if (httpCode == 200) {
