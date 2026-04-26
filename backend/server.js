@@ -161,24 +161,27 @@ app.post('/api/attendance', async (req, res) => {
         // Calculate Status (Present vs Late)
         let status = 'Present';
 
-        // Retrieve date from session and combine with start_time (assuming server timezone consistency)
-        // Note: session.date is comparable to YYYY-MM-DD. session.start_time is 'HH:MM:SS'.
-        const now = new Date();
+        // --- TIMEZONE FIX FOR THAILAND (UTC+7) ---
+        const THAILAND_OFFSET = 7 * 60 * 60 * 1000;
+        const nowUTC = new Date();
+        const nowTH = new Date(nowUTC.getTime() + THAILAND_OFFSET);
 
-        // Parse Session Start Time
-        const sessionDate = new Date(session.date);
-        const [h, m] = session.start_time.split(':');
-        sessionDate.setHours(parseInt(h), parseInt(m), 0, 0);
+        // session.date is often YYYY-MM-DD string from MySQL
+        // session.start_time is "HH:mm:ss" string
+        const dateStr = new Date(session.date).toISOString().split('T')[0];
+        const sessionStartTH = new Date(`${dateStr}T${session.start_time}Z`); 
+        // We treat the stored time as "UTC" for a simple relative comparison 
+        // since both nowTH and sessionStartTH will be shifted identically.
 
-        // Add Late Cushion (minutes)
-        const lateThreshold = new Date(sessionDate.getTime() + (session.late_condition * 60000));
-        const absentThreshold = new Date(sessionDate.getTime() + (session.absent_condition * 60000));
+        const diffMinutes = (nowTH - sessionStartTH) / 60000;
 
-        if (now > absentThreshold) {
+        if (diffMinutes > session.absent_condition) {
             status = 'Absent';
-        } else if (now > lateThreshold) {
+        } else if (diffMinutes > session.late_condition) {
             status = 'Late';
         }
+        
+        console.log(`Scan received: Student ${student.student_code} at ${nowTH.toISOString()} (Diff: ${diffMinutes} min) -> Status: ${status}`);
 
         // 4. Insert Attendance
         const [r] = await pool.query(
