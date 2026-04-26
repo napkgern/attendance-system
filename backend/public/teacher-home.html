@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Fingerprint Attendance - Teacher Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body style="background-color: #f4f5f7;">
+    <header>
+        <div class="brand">
+            <div class="logo">FA</div>
+            <div>
+                <h1>Fingerprint Attendance System</h1>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <span id="user-display" class="muted"></span>
+            <button class="btn secondary" id="btn-logout">Logout</button>
+        </div>
+    </header>
+
+
+    <main>
+        <h2 id="greeting-title">Hi, Loading...</h2>
+
+        <!-- Profile Box -->
+        <div class="card" style="margin-bottom: 20px;">
+            <div class="muted bold" style="margin-bottom: 12px;">Teacher Profile</div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div id="profile-initials"
+                    style="width: 48px; height: 48px; border-radius: 50%; background: var(--accent); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px;">
+                </div>
+                <div>
+                    <div id="profile-name" class="big"></div>
+                    <div id="profile-email" class="small" style="margin-top: 4px;">Email: </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Subject Box -->
+        <div class="card flex-between" style="margin-bottom: 20px;">
+            <div class="muted bold">Manage Your Courses</div>
+            <button class="btn success" onclick="openAddSubject()">+ Create New Subject</button>
+        </div>
+
+        <!-- Created Courses Box -->
+        <div class="card">
+            <div class="muted bold" style="margin-bottom: 20px;">My Subjects</div>
+            <div id="teacher-my-courses-container" style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div class="muted">Loading your courses...</div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- modal -->
+    <div class="modal-backdrop" id="modal-backdrop">
+        <div class="modal" id="modal"></div>
+    </div>
+
+    <script src="teacher-home.js"></script>
+</body>
+
+</html>

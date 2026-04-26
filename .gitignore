@@ -1,0 +1,21 @@
+# --- Backend ---
+backend/node_modules/
+backend/dist/
+backend/.env
+backend/*.zip
+backend/*.log
+backend/temp_output.txt
+backend/devices.txt
+
+# --- Firmware / IoT ---
+firmware/build/
+firmware/*.bin
+firmware/*.elf
+
+# --- General / System ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.pem
+node_modules/

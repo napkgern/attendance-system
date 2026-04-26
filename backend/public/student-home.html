@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Fingerprint Attendance Prototype - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body style="background-color: #f4f5f7;">
+    <header>
+        <div class="brand">
+            <div class="logo">FA</div>
+            <div>
+                <h1>Fingerprint Attendance System</h1>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <span id="user-display" class="muted"></span>
+            <button class="btn secondary" id="btn-logout">Logout</button>
+        </div>
+    </header>
+
+
+    <main>
+        <h2 id="greeting-title">Hi, Loading...</h2>
+
+        <!-- Profile Box -->
+        <!-- Profile Box -->
+        <div class="card" style="margin-bottom: 20px;">
+            <div class="muted bold" style="margin-bottom: 12px;">คุณเข้าสู่ระบบในชื่อ</div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div id="profile-initials"
+                    style="width: 48px; height: 48px; border-radius: 50%; background: var(--accent); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px;">
+                </div>
+                <div>
+                    <div id="profile-name" class="big"></div>
+                    <div id="profile-email" class="small" style="margin-top: 4px;">อีเมล: </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search / Register Box -->
+        <!-- Search / Register Box -->
+        <div class="card" style="margin-bottom: 20px;">
+            <div class="muted bold" style="margin-bottom: 12px;">ค้นหารายวิชาบนระบบ (เพื่อลงทะเบียน)</div>
+            <div class="form-row">
+                <select id="stu-register-select" style="flex: 1;">
+                    <option value="">ค้นหารายวิชา...</option>
+                </select>
+                <button class="btn success" style="padding: 0 24px;" onclick="enrollSubject()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Registered Courses Box -->
+        <div class="card">
+            <div class="muted bold" style="margin-bottom: 20px;">รายวิชาที่เข้าใช้ไม่นานมานี้ (รายวิชาของคุณ)</div>
+            <div id="student-my-courses-container" style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div class="muted">Loading your courses...</div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- modal -->
+    <div class="modal-backdrop" id="modal-backdrop">
+        <div class="modal" id="modal"></div>
+    </div>
+
+    <script src="student-home.js"></script>
+</body>
+
+</html>

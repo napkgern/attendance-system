@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+dist/
+
+# Env / Secrets
+.env
+*.pem
+
+# IDE / System
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# Temp / Zip
+student.zip
+temp_output.txt
+devices.txt
+sqlite
