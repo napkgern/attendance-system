@@ -696,25 +696,6 @@ app.get('/api/devices', authMiddleware, async (req, res) => {
     }
 });
 
-app.post('/api/iot/devices', authMiddleware, async (req, res) => {
-    try {
-        if (req.user.role !== 'teacher' && req.user.role !== 'admin') {
-            return res.status(403).json({ error: 'No permission' });
-        }
-        const { device_id, description } = req.body;
-        if (!device_id) return res.status(400).json({ error: 'Missing device_id' });
-
-        await pool.query(
-            'INSERT INTO devices (device_id, description) VALUES (?, ?) ON DUPLICATE KEY UPDATE description = ?',
-            [device_id, description || null, description || null]
-        );
-        res.json({ ok: true, message: 'Device registered successfully' });
-    } catch (err) {
-        console.error('Add device error:', err);
-        res.status(500).json({ error: 'server error' });
-    }
-});
-
 
 app.post('/api/teacher/enroll', authMiddleware, async (req, res) => {
     if (req.user.role !== 'teacher' && req.user.role !== 'admin') {
