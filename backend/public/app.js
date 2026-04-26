@@ -550,8 +550,9 @@ async function createSession() {
     const late = $('#new-late').value;
     const absent = $('#new-absent').value;
 
+    // Fix: Use local Thailand date instead of UTC ISO date
     const now = new Date();
-    const dateStr = now.toISOString().split('T')[0]; // Current date
+    const dateStr = now.toLocaleDateString('en-CA'); // en-CA gives YYYY-MM-DD format reliably
 
     if (!subject_id || !start || !device_id) {
         alert('กรอกข้อมูลไม่ครบ');
