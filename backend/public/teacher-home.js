@@ -15,7 +15,7 @@ function verifyAuth(res) {
         alert('Session expired. Please login again.');
         localStorage.removeItem('fa_token');
         localStorage.removeItem('fa_user');
-        window.location.href = '/auth.html';
+        window.location.href = '/auth';
         throw new Error('Unauthorized');
     }
     return res;
@@ -38,7 +38,7 @@ try {
         logoutBtn.onclick = () => {
             localStorage.removeItem('fa_user');
             localStorage.removeItem('fa_token');
-            location.href = '/auth.html';
+            location.href = '/auth';
         };
     }
 })();
@@ -116,7 +116,7 @@ async function loadTeacherSubjects() {
 }
 
 function focusOnSubject(subjectId) {
-    window.location.href = `teacher.html?subject_id=${subjectId}`;
+    window.location.href = `/teacher/${subjectId}`;
 }
 
 /* Modal Helpers */

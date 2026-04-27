@@ -25,7 +25,15 @@ async function check() {
 
         const [[activeSession]] = await cloud.query("SELECT * FROM scan_sessions WHERE status='scanning' LIMIT 1");
         if (activeSession) {
-            console.log(`\n🟢 Live Session Active: ID ${activeSession.session_id} on Device ${activeSession.device_id}`);
+            const [sessInfo] = await cloud.query("SELECT date, start_time, late_condition, absent_condition FROM sessions WHERE session_id = ?", [activeSession.session_id]);
+            const s = sessInfo[0];
+            console.log(`\n🟢 Live Session Active: ID ${activeSession.session_id}`);
+            console.log(`- Start Time: ${s.start_time} (Date: ${s.date.toISOString().split('T')[0]})`);
+            console.log(`- Rules: Late > ${s.late_condition}m, Absent > ${s.absent_condition}m`);
+            
+            const nowUTC = new Date();
+            const nowTH = new Date(nowUTC.getTime() + (7 * 60 * 60 * 1000));
+            console.log(`- Server Now (Thailand): ${nowTH.toISOString()}`);
         } else {
             console.log('\n⚪ No Live Session is currently active in the Cloud.');
         }

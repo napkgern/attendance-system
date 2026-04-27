@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Teacher Dashboard - Fingerprint Attendance</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/styles.css">
 </head>
 
 <body>
@@ -37,11 +37,11 @@
                         <div class="row actions">
                             <button class="btn"
                                 style="background: transparent; color: #475569; border: 1px solid #cbd5e1; padding: 6px 12px; font-size: 14px; border-radius: 4px; cursor: pointer;"
-                                onclick="window.location.href='teacher-home.html'">← Back to Dashboard</button>
+                                onclick="window.location.href='/teacher-home'">← Back to Dashboard</button>
                             <button class="btn" onclick="openStartScan()">Start scan</button>
                             <button class="btn secondary" onclick="openManageCoTeachers()">Co-Teachers</button>
                             <button class="btn"
-                                onclick="location.href='Manage.html?subject_id=' + new URLSearchParams(window.location.search).get('subject_id')">Manage
+                                onclick="location.href='/manage/' + getSubjectId()">Manage
                                 Students</button>
                         </div>
                     </div>
@@ -120,7 +120,7 @@
                     <div style="display:flex;flex-direction:column;gap:8px">
                         <button class="btn" onclick="openStartScan()">Start scan</button>
                         <button class="btn"
-                            onclick="location.href='Manage.html?subject_id=' + new URLSearchParams(window.location.search).get('subject_id')">Manage
+                            onclick="location.href='/manage/' + getSubjectId()">Manage
                             Students</button>
                         <button class="btn secondary" onclick="showEnrollmentGuide()">Enrollment Guide</button>
                     </div>
@@ -134,7 +134,7 @@
         <div class="modal" id="modal"></div>
     </div>
 
-    <script src="app.js"></script>
+    <script src="/app.js"></script>
 </body>
 
 </html>

@@ -4,6 +4,14 @@
 const API_BASE = '/api';
 const $ = s => document.querySelector(s);
 
+function getSubjectId() {
+    const pathParts = window.location.pathname.split('/');
+    if (pathParts.length >= 3 && ['teacher', 'manage', 'Manage', 'student'].includes(pathParts[1])) {
+        return pathParts[2];
+    }
+    return new URLSearchParams(window.location.search).get('subject_id');
+}
+
 function getAuthHeaders() {
     const token = localStorage.getItem('fa_token');
     return {
@@ -16,7 +24,7 @@ function verifyAuth(res) {
         alert('Session expired. Please login again.');
         localStorage.removeItem('fa_token');
         localStorage.removeItem('fa_user');
-        window.location.href = '/auth.html';
+        window.location.href = '/auth';
         throw new Error('Unauthorized');
     }
     return res;
@@ -71,7 +79,7 @@ try {
 
     $('#btn-logout')?.addEventListener('click', () => {
         localStorage.clear();
-        location.href = '/auth.html';
+        location.href = '/auth';
     });
 })();
 
@@ -110,8 +118,7 @@ async function loadMyProfile() {
 
 
 async function loadStudentSummary() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const subjectIdParam = urlParams.get('subject_id');
+    const subjectIdParam = getSubjectId();
 
     if (!subjectIdParam) {
         // If no subject is selected, maybe hide the summary or clear it out
@@ -291,8 +298,7 @@ async function loadStudentSubjects() {
     });
 
     // Auto-select based on URL parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    const subjectIdParam = urlParams.get('subject_id');
+    const subjectIdParam = getSubjectId();
 
     if (subjectIdParam && sel) {
         sel.value = subjectIdParam;
@@ -313,7 +319,7 @@ async function loadStudentSubjects() {
 }
 
 function focusOnSubject(subjectId) {
-    window.location.href = `student.html?subject_id=${subjectId}`;
+    window.location.href = `/student/${subjectId}`;
 }
 
 

@@ -16,13 +16,21 @@ function verifyAuth(res) {
         alert('Session expired. Please login again.');
         localStorage.removeItem('fa_token');
         localStorage.removeItem('fa_user');
-        window.location.href = '/auth.html';
+        window.location.href = '/auth';
         throw new Error('Unauthorized');
     }
     return res;
 }
 
 const $ = sel => document.querySelector(sel);
+
+function getSubjectId() {
+    const pathParts = window.location.pathname.split('/');
+    if (pathParts.length >= 3 && ['teacher', 'manage', 'Manage', 'student'].includes(pathParts[1])) {
+        return pathParts[2];
+    }
+    return new URLSearchParams(window.location.search).get('subject_id');
+}
 
 /* =====================================================
    Logged user
@@ -57,7 +65,7 @@ const state = {
         logoutBtn.onclick = () => {
             localStorage.removeItem('fa_user');
             localStorage.removeItem('fa_token');
-            location.href = '/auth.html';
+            location.href = '/auth';
         };
     }
 })();
@@ -72,8 +80,7 @@ async function init() {
     renderSubjectSelectors();
 
     // Auto-select based on URL parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    const subjectIdParam = urlParams.get('subject_id');
+    const subjectIdParam = getSubjectId();
 
     const sel = document.getElementById('teacher-subject-select');
     if (subjectIdParam && sel) {
@@ -97,8 +104,7 @@ async function init() {
 
 async function checkLiveStatus() {
     try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const subjectIdParam = urlParams.get('subject_id');
+        const subjectIdParam = getSubjectId();
         const q = subjectIdParam ? `?subject_id=${subjectIdParam}` : '';
 
         const res = await fetch(`${API_BASE}/teacher/scan/status${q}`, {
@@ -142,8 +148,7 @@ async function checkLiveStatus() {
 }
 
 async function fetchLatestSession() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const subjectIdParam = urlParams.get('subject_id');
+    const subjectIdParam = getSubjectId();
     const q = subjectIdParam ? `?subject_id=${subjectIdParam}` : '';
 
     const res = await fetch(`${API_BASE}/teacher/latest-session${q}`, {
@@ -196,8 +201,7 @@ init();
    Load from DB
 ===================================================== */
 async function loadStudentsFromApi() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const subjectIdParam = urlParams.get('subject_id');
+    const subjectIdParam = getSubjectId();
     const queryStr = subjectIdParam ? `?subject_id=${subjectIdParam}` : '';
 
     const res = await fetch(`${API_BASE}/teacher/students${queryStr}`, {
@@ -361,8 +365,7 @@ async function addStudent() {
 
     if (!code || !name) return alert('กรอกข้อมูลไม่ครบ');
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const subjectIdParam = urlParams.get('subject_id');
+    const subjectIdParam = getSubjectId();
 
     await fetch(`${API_BASE}/teacher/students`, {
         method: 'POST',
@@ -490,8 +493,7 @@ function closeModal() {
 }
 
 async function openStartScan() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const subjectIdParam = urlParams.get('subject_id');
+    const subjectIdParam = getSubjectId();
 
     const options = state.subjects
         .filter(s => subjectIdParam ? s.subject_id == subjectIdParam : true)
@@ -705,8 +707,7 @@ async function renderAttendanceBySession() {
 
 
 function openScanModal() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const subjectIdParam = urlParams.get('subject_id');
+    const subjectIdParam = getSubjectId();
 
     const subjectOptions = state.subjects
         .filter(s => subjectIdParam ? s.subject_id == subjectIdParam : true)
@@ -900,7 +901,7 @@ async function toggleEditLiveAttendance() {
         
         btn.innerText = 'Edit Attendance';
         // Immediately fetch to show updated static rows
-        const subjectIdParam = new URLSearchParams(window.location.search).get('subject_id');
+        const subjectIdParam = getSubjectId();
         fetchLiveAttendance(subjectIdParam, window.currentLiveSessionId);
     }
 }
@@ -960,7 +961,7 @@ async function saveTimeRules() {
         alert('อัปเดตกฎและคำนวณเวลาเข้าเรียนใหม่สำเร็จ');
         
         // Refresh table display instantly
-        const subjectIdParam = new URLSearchParams(window.location.search).get('subject_id');
+        const subjectIdParam = getSubjectId();
         fetchLiveAttendance(subjectIdParam, window.currentLiveSessionId);
 
     } catch (e) {
@@ -983,8 +984,7 @@ function updateLiveStats(records) {
 async function stopScan() {
     if (window.liveInterval) clearInterval(window.liveInterval);
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const subjectIdParam = urlParams.get('subject_id');
+    const subjectIdParam = getSubjectId();
 
     await fetch(`${API_BASE}/teacher/scan/stop`, {
         method: 'POST',

@@ -11,11 +11,11 @@ function goToDashboardByRole(user) {
     }
 
     if (user.role === 'teacher') {
-        window.location.href = '/teacher-home.html';
+        window.location.href = '/teacher-home';
     } else if (user.role === 'student') {
-        window.location.href = '/student-home.html';
+        window.location.href = '/student-home';
     } else if (user.role === 'admin') {
-        window.location.href = '/admin.html';
+        window.location.href = '/admin';
     } else {
         window.location.href = '/';
     }

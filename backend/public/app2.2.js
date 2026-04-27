@@ -31,7 +31,7 @@ try {
 
     $('#btn-logout')?.addEventListener('click', () => {
         localStorage.clear();
-        location.href = '/auth.html';
+        location.href = '/auth';
     });
 })();
 

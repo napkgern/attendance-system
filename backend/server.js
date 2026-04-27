@@ -216,9 +216,18 @@ app.get('/api/subjects/:subjectId/sessions', authMiddleware, async (req, res) =>
     }
 });
 
-/* ------------------ Health / root ------------------ */
+/* ------------------ Health / root / Page Routes ------------------ */
 app.get('/health', (req, res) => res.json({ ok: true }));
+
+// Clean HTML routes
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'auth.html')));
+app.get('/auth', (req, res) => res.sendFile(path.join(__dirname, 'public', 'auth.html')));
+app.get('/teacher-home', (req, res) => res.sendFile(path.join(__dirname, 'public', 'teacher-home.html')));
+app.get('/teacher/:id', (req, res) => res.sendFile(path.join(__dirname, 'public', 'teacher.html')));
+app.get('/manage/:id', (req, res) => res.sendFile(path.join(__dirname, 'public', 'Manage.html')));
+app.get('/Manage/:id', (req, res) => res.sendFile(path.join(__dirname, 'public', 'Manage.html')));
+app.get('/student-home', (req, res) => res.sendFile(path.join(__dirname, 'public', 'student-home.html')));
+app.get('/student/:id', (req, res) => res.sendFile(path.join(__dirname, 'public', 'student.html')));
 
 /* ------------------ Start ------------------ */
 const PORT = process.env.PORT || 3000;

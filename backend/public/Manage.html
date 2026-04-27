@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Teacher Dashboard - Fingerprint Attendance</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/styles.css">
 </head>
 
 <body class="manage-page">
@@ -29,7 +29,7 @@
                 <h2 style="margin:0">Manage Students</h2>
                 <div class="row actions">
                     <button class="btn secondary"
-                        onclick="location.href='teacher.html?subject_id=' + new URLSearchParams(window.location.search).get('subject_id')">Back</button>
+                        onclick="location.href='/teacher/' + getSubjectId()">Back</button>
                     <button class="btn" onclick="openAddStudent()">+ Add Student</button>
                 </div>
             </div>
@@ -42,7 +42,7 @@
         <div class="modal" id="modal"></div>
     </div>
 
-    <script src="app.js"></script>
+    <script src="/app.js"></script>
 </body>
 
 </html>
