@@ -1109,8 +1109,8 @@ function renderAttendanceTable(rows) {
 
 // ===================== Co-Teacher Management =====================
 async function openManageCoTeachers() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const subjectId = urlParams.get('subject_id');
+
+    const subjectId = getSubjectId();
     if (!subjectId) return alert('No subject selected');
 
     // Fetch current teachers for this subject
