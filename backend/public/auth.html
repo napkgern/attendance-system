@@ -32,7 +32,7 @@
                     <input id="login-password" type="password" placeholder="password">
                 </div>
                 <button class="btn" id="btn-login">เข้าสู่ระบบ</button>
-                <div class="small">ยังไม่มีบัญชี? คลิก Register</div>
+                <div class="small" id="link-to-register" style="cursor: pointer; color: #3b82f6; text-decoration: underline;">ยังไม่มีบัญชี? คลิก Register</div>
                 <div id="login-msg" class="hint"></div>
             </div>
 
@@ -64,8 +64,12 @@
                     <label for="reg-studentid">รหัสนักเรียน (ถ้าเป็น Student)</label>
                     <input id="reg-studentid" placeholder="เช่น 101">
                 </div>
+                <div class="form-row" id="teacher-fields" style="display:none">
+                    <label for="reg-passcode">รหัสผ่านสำหรับลงทะเบียนเป็นครู</label>
+                    <input id="reg-passcode" type="password" placeholder="Teacher Passcode">
+                </div>
                 <button class="btn" id="btn-register">สมัคร</button>
-                <div class="small">มีบัญชีแล้ว? คลิก Login</div>
+                <div class="small" id="link-to-login" style="cursor: pointer; color: #3b82f6; text-decoration: underline;">มีบัญชีแล้ว? คลิก Login</div>
                 <div id="reg-msg" class="hint"></div>
             </div>
         </div>

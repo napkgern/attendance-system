@@ -29,8 +29,15 @@ async function findUserByUsernameOrEmail(identifier) {
 /* ------------------ Register ------------------ */
 app.post('/api/register', async (req, res) => {
     try {
-        const { name, username, email, password, role = 'student', student_code } = req.body;
+        const { name, username, email, password, role = 'student', student_code, teacher_passcode } = req.body;
         if (!username || !password || !name) return res.status(400).json({ error: 'ข้อมูลไม่ครบ' });
+
+        if (role === 'teacher') {
+            const EXPECTED_PASSCODE = process.env.TEACHER_PASSCODE || 'TEACHER-1234';
+            if (teacher_passcode !== EXPECTED_PASSCODE) {
+                return res.status(403).json({ error: 'รหัสผ่านสำหรับลงทะเบียนครูไม่ถูกต้อง' });
+            }
+        }
 
         const [existsRows] = await pool.query('SELECT user_id FROM users WHERE username = ? OR email = ? LIMIT 1', [username, email]);
         if (existsRows.length) return res.status(400).json({ error: 'username หรือ email มีแล้ว' });

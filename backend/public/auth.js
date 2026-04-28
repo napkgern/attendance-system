@@ -39,6 +39,19 @@ function switchTab(tab) {
 $('tab-login').addEventListener('click', () => switchTab('login'));
 $('tab-register').addEventListener('click', () => switchTab('register'));
 
+$('link-to-login').addEventListener('click', () => switchTab('login'));
+$('link-to-register').addEventListener('click', () => switchTab('register'));
+
+$('reg-role').addEventListener('change', (e) => {
+    if (e.target.value === 'student') {
+        $('student-fields').style.display = 'block';
+        if ($('teacher-fields')) $('teacher-fields').style.display = 'none';
+    } else {
+        $('student-fields').style.display = 'none';
+        if ($('teacher-fields')) $('teacher-fields').style.display = 'block';
+    }
+});
+
 /* ---------- Register ---------- */
 $('btn-register').addEventListener('click', async () => {
     $('reg-msg').innerText = '';
@@ -48,7 +61,8 @@ $('btn-register').addEventListener('click', async () => {
         email: $('reg-email').value.trim(),
         password: $('reg-password').value,
         role: $('reg-role').value,
-        student_code: $('reg-studentid').value.trim() || null
+        student_code: $('reg-studentid').value.trim() || null,
+        teacher_passcode: $('reg-passcode') ? $('reg-passcode').value.trim() : null
     };
 
     if (!payload.name || !payload.username || !payload.password) {
