@@ -117,7 +117,7 @@ async function checkLiveStatus() {
             // Restore scanning UI
             const sessionId = data.session_id;
             const subjectId = data.subject_id; // Now available
-            const deviceId = data.device_id; 
+            const deviceId = data.device_id;
 
             // Try to get subject name from "latest session" or "sessions" state if possible.
             // Since we might not have state loaded yet, let's fetch latest-session to check if it matches.
@@ -813,6 +813,14 @@ async function fetchLiveAttendance(subjectId, sessionId) {
 
 function renderLiveTable(rows) {
     const box = document.getElementById('live-attendance-table');
+
+    // Save scroll position to prevent jumping when data updates
+    let savedScrollTop = 0;
+    const existingTable = box.querySelector('table');
+    if (existingTable) {
+        savedScrollTop = existingTable.scrollTop;
+    }
+
     if (!rows.length) {
         box.innerHTML = '<div class="muted">ยังไม่มีข้อมูลการสแกน</div>';
         return;
@@ -855,6 +863,12 @@ function renderLiveTable(rows) {
     });
     html += '</tbody></table>';
     box.innerHTML = html;
+
+    // Restore scroll position
+    const newTable = box.querySelector('table');
+    if (newTable && savedScrollTop > 0) {
+        newTable.scrollTop = savedScrollTop;
+    }
 }
 
 window.isEditingLive = false;
@@ -872,7 +886,7 @@ async function toggleEditLiveAttendance() {
     } else {
         btn.innerText = 'Saving...';
         btn.className = 'btn secondary';
-        
+
         // Gather edits
         const selects = document.querySelectorAll('.live-edit-status');
         const overrides = [];
@@ -898,7 +912,7 @@ async function toggleEditLiveAttendance() {
                 alert('Save failed.');
             }
         }
-        
+
         btn.innerText = 'Edit Attendance';
         // Immediately fetch to show updated static rows
         const subjectIdParam = getSubjectId();
@@ -959,7 +973,7 @@ async function saveTimeRules() {
 
         closeModal();
         alert('อัปเดตกฎและคำนวณเวลาเข้าเรียนใหม่สำเร็จ');
-        
+
         // Refresh table display instantly
         const subjectIdParam = getSubjectId();
         fetchLiveAttendance(subjectIdParam, window.currentLiveSessionId);
@@ -1138,11 +1152,11 @@ async function openManageCoTeachers() {
 
     let availHtml = '<select id="add-coteacher-select" style="width: 100%; margin-bottom: 12px;">';
     availHtml += '<option value="">-- Select Teacher to Add --</option>';
-    
+
     // Filter out teachers already in the list
     const existingIds = data.teachers.map(t => t.teacher_id);
     const toAdd = availData.teachers.filter(t => !existingIds.includes(t.teacher_id));
-    
+
     if (toAdd.length === 0) {
         availHtml = '<p class="muted">No other teachers available to add.</p>';
     } else {

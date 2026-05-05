@@ -28,7 +28,7 @@
             <div>
                 <!-- Teacher Dashboard -->
                 <section id="teacher-dashboard" class="card" aria-labelledby="teacher-title">
-                    <div class="row head">
+                    <div class="row head flex-between">
                         <div>
                             <h2 id="teacher-title">Course Detail: <span id="display-subject-name"
                                     style="color:#3b82f6;">Loading...</span></h2>
@@ -47,18 +47,17 @@
                     </div>
 
                     <section id="live-dashboard" class="card" style="margin-top:20px;">
-                        <div class="row head" style="margin-bottom:12px; justify-content: space-between;">
+                        <div class="row head flex-between" style="margin-bottom:12px;">
                             <h3 style="margin:0; display:flex; align-items:center; gap:8px;">
                                 📊 Live Attendance
                             </h3>
-                            <div style="display:flex; gap:8px;">
+                            <div class="row actions">
                                 <button id="btn-edit-rules" class="btn"
-                                    style="padding: 6px 16px; font-size: 14px; display: none; background: #64748b;" onclick="openEditTimeRules()">⚙️ Edit Rules</button>
+                                    style="display: none; background: #64748b;" onclick="openEditTimeRules()">⚙️ Edit Rules</button>
                                 <button id="btn-edit-attendance" class="btn secondary"
-                                    style="padding: 6px 16px; font-size: 14px; display: none;" onclick="toggleEditLiveAttendance()">Edit Attendance</button>
+                                    style="display: none;" onclick="toggleEditLiveAttendance()">Edit Attendance</button>
                                 <button id="btn-stop-class" class="btn danger"
-                                    style="padding: 6px 16px; font-size: 14px; display: none;" onclick="stopScan()">End
-                                    Class</button>
+                                    style="display: none;" onclick="stopScan()">End Class</button>
                             </div>
                         </div>
 
@@ -92,7 +91,7 @@
                         </div>
 
                         <!-- Live Table Container -->
-                        <div id="live-attendance-table" style="margin-top: 20px; display: none;"></div>
+                        <div id="live-attendance-table" class="table-responsive" style="margin-top: 20px; display: none;"></div>
                     </section>
 
 
@@ -105,7 +104,7 @@
                             <select id="teacher-session-select"></select>
                             <button class="btn secondary" onclick="filterAttendance()">Filter</button>
                         </div>
-                        <div id="attendance-table"></div>
+                        <div id="attendance-table" class="table-responsive"></div>
                     </div>
                 </section>
             </div>

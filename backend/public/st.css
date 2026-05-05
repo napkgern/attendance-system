@@ -8,6 +8,9 @@
     border-collapse: separate;
     border-spacing: 0;
     margin-top: 16px;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
 }
 
 .student-table th {
@@ -86,6 +89,9 @@
     border-collapse: separate;
     border-spacing: 0;
     margin-top: 14px;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
 }
 
 .manage-page th {

@@ -26,12 +26,9 @@
 
     <main>
 
-        <div class="grid">
-            <!-- left/main column -->
-            <div>
-                <!-- Student Dashboard -->
-                <section id="student-dashboard" class="card" aria-labelledby="student-title">
-                    <div class="row head" style="justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+        <!-- Student Dashboard -->
+        <section id="student-dashboard" class="card" aria-labelledby="student-title">
+                    <div class="row head flex-between" style="align-items: flex-start; margin-bottom: 24px;">
                         <div>
                             <h2 id="student-title">Student Dashboard</h2>
                             <small class="muted">สรุปการเข้าเรียนและสถานะลายนิ้วมือของคุณ</small>
@@ -99,20 +96,9 @@
                         <button class="btn" onclick="filterStudentAttendance()">Filter</button>
                     </div>
 
-                    <div id="student-attendance-result"></div>
+                    <div id="student-attendance-result" class="table-responsive"></div>
 
-                </section>
-
-                </section>
-            </div>
-
-            <!-- right column -->
-            <aside class="right-col">
-
-
-
-            </aside>
-        </div>
+        </section>
     </main>
 
     <!-- modal -->

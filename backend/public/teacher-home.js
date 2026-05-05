@@ -100,7 +100,7 @@ async function loadTeacherSubjects() {
     let cardsHtml = '';
     data.subjects.forEach(s => {
         cardsHtml += `
-            <div class="card" style="padding: 0; position: relative; cursor:pointer; flex: 1 1 200px; text-align:center; overflow: hidden; transition: transform 0.2s;" onclick="focusOnSubject(${s.subject_id})" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+            <div class="card" style="padding: 0; position: relative; cursor:pointer; flex: 1 1 200px; max-width: 100%; text-align:center; overflow: hidden; transition: all 0.3s ease;" onclick="focusOnSubject(${s.subject_id})" onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='0 15px 30px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-sm)'">
                 <button onclick="event.stopPropagation(); deleteSubject(${s.subject_id}, '${s.subject_name}')" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.05); border:none; border-radius: 8px; padding: 6px 8px; cursor: pointer; transition: all 0.2s; z-index: 10;" title="Delete Subject" onmouseover="this.style.background='rgba(239, 68, 68, 0.1)'; this.style.color='#dc2626'" onmouseout="this.style.background='rgba(0,0,0,0.05)'; this.style.color='inherit'">🗑️</button>
                 <div style="padding: 24px 16px;">
                     <div style="font-size: 32px; margin-bottom: 12px;">🏫</div>

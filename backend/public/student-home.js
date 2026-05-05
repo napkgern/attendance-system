@@ -112,7 +112,7 @@ async function loadStudentSubjects() {
         const color = colors[index % colors.length];
 
         cardsHtml += `
-            <div class="card" style="width: 250px; padding: 0; cursor:pointer; position: relative; overflow: hidden;" onclick="window.location.href='/student/${s.subject_id}'">
+            <div class="card" style="flex: 1 1 250px; max-width: 100%; padding: 0; cursor:pointer; position: relative; overflow: hidden; transition: all 0.3s ease;" onclick="window.location.href='/student/${s.subject_id}'" onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='0 15px 30px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-sm)'">
                 <button onclick="event.stopPropagation(); unenrollSubject(${s.subject_id}, '${s.subject_name}')" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.5); border:none; border-radius: 8px; padding: 6px 8px; cursor: pointer; backdrop-filter: blur(4px); transition: all 0.2s;" title="Unenroll" onmouseover="this.style.background='rgba(255,255,255,0.9)'" onmouseout="this.style.background='rgba(255,255,255,0.5)'">🗑️</button>
                 <div style="height: 120px; background: ${color}; display:flex; align-items:center; justify-content:center;">
                     <span style="font-size: 48px; font-weight: 800; color: rgba(255,255,255,0.8); text-shadow: 0 4px 12px rgba(0,0,0,0.1);">${s.subject_name.substring(0, 3).toUpperCase()}</span>
