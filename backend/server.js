@@ -18,53 +18,97 @@ const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS || '10', 10);
 
 /* ------------------ Helpers ------------------ */
-async function findUserByUsernameOrEmail(identifier) {
+async function findUserByLoginIdentifier(identifier) {
     const [rows] = await pool.query(
-        'SELECT user_id, username, email, password_hash, role FROM users WHERE username = ? OR email = ? LIMIT 1',
-        [identifier, identifier]
+        `SELECT DISTINCT u.user_id, u.username, u.email, u.password_hash, u.role
+         FROM users u
+         LEFT JOIN students s ON s.user_id = u.user_id
+         WHERE u.username = ? OR u.email = ? OR s.student_code = ?
+         LIMIT 1`,
+        [identifier, identifier, identifier]
     );
     return rows[0];
+}
+
+async function userIdentifierExists(username, email) {
+    const [rows] = await pool.query(
+        'SELECT user_id FROM users WHERE username = ? OR (? IS NOT NULL AND email = ?) LIMIT 1',
+        [username, email || null, email || null]
+    );
+    return rows.length > 0;
+}
+
+function normalizeIdentifier(value) {
+    return String(value || '').trim();
+}
+
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+async function createUser({ username, email, password, role }) {
+    const hash = await bcrypt.hash(password, SALT_ROUNDS);
+    const [r] = await pool.query(
+        'INSERT INTO users (username, email, password_hash, role) VALUES (?, ?, ?, ?)',
+        [username, email || null, hash, role]
+    );
+    return r.insertId;
 }
 
 /* ------------------ Register ------------------ */
 app.post('/api/register', async (req, res) => {
     try {
-        const { name, username, email, password, role = 'student', student_code, teacher_passcode } = req.body;
-        if (!username || !password || !name) return res.status(400).json({ error: 'ข้อมูลไม่ครบ' });
+        const { name, username: rawUsername, email, password, role = 'student', student_code, teacher_passcode } = req.body;
+        const normalizedRole = role === 'teacher' ? 'teacher' : 'student';
+        const fullName = normalizeIdentifier(name);
+        const username = normalizeIdentifier(rawUsername);
+        const studentCode = normalizeIdentifier(student_code);
+        const userEmail = normalizeIdentifier(email).toLowerCase() || null;
 
-        if (role === 'teacher') {
+        if (!fullName || !username || !password) return res.status(400).json({ error: 'กรุณากรอกข้อมูลให้ครบ' });
+        if (password.length < 8) return res.status(400).json({ error: 'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร' });
+
+        if (normalizedRole === 'student') {
+            if (!studentCode) return res.status(400).json({ error: 'กรุณากรอกรหัสนักเรียน' });
+            if (userEmail && !isValidEmail(userEmail)) return res.status(400).json({ error: 'รูปแบบอีเมลไม่ถูกต้อง' });
+        } else {
+            if (!userEmail || !isValidEmail(userEmail)) return res.status(400).json({ error: 'กรุณากรอกอีเมลให้ถูกต้อง' });
+        }
+
+        if (normalizedRole === 'teacher') {
             const EXPECTED_PASSCODE = process.env.TEACHER_PASSCODE || 'TEACHER-1234';
             if (teacher_passcode !== EXPECTED_PASSCODE) {
                 return res.status(403).json({ error: 'รหัสผ่านสำหรับลงทะเบียนครูไม่ถูกต้อง' });
             }
         }
 
-        const [existsRows] = await pool.query('SELECT user_id FROM users WHERE username = ? OR email = ? LIMIT 1', [username, email]);
-        if (existsRows.length) return res.status(400).json({ error: 'username หรือ email มีแล้ว' });
-
-        const hash = await bcrypt.hash(password, SALT_ROUNDS);
-        const [r] = await pool.query('INSERT INTO users (username, email, password_hash, role) VALUES (?, ?, ?, ?)', [username, email || null, hash, role]);
-        const userId = r.insertId;
-
-        if (role === 'student') {
-            // Check if student exists by code
-            let linked = false;
-            if (student_code) {
-                const [existing] = await pool.query('SELECT student_id FROM students WHERE student_code = ? LIMIT 1', [student_code]);
-                if (existing.length > 0) {
-                    await pool.query('UPDATE students SET user_id = ?, full_name = ? WHERE student_id = ?', [userId, name, existing[0].student_id]);
-                    linked = true;
-                }
-            }
-            if (!linked) {
-                await pool.query('INSERT INTO students (user_id, student_code, full_name) VALUES (?, ?, ?)', [userId, student_code || null, name]);
-            }
-        } else if (role === 'teacher') {
-            await pool.query('INSERT INTO teachers (user_id, full_name) VALUES (?, ?)', [userId, name]);
+        if (await userIdentifierExists(username, userEmail)) {
+            return res.status(400).json({
+                error: userEmail ? 'Username หรืออีเมลนี้ถูกใช้งานแล้ว' : 'Username นี้ถูกใช้งานแล้ว'
+            });
         }
 
-        const token = jwt.sign({ user_id: userId, username, role }, JWT_SECRET, { expiresIn: '8h' });
-        res.json({ token, user: { user_id: userId, username, email, role } });
+        let existingStudent = null;
+        if (normalizedRole === 'student') {
+            const [existing] = await pool.query('SELECT student_id, user_id FROM students WHERE student_code = ? LIMIT 1', [studentCode]);
+            existingStudent = existing[0] || null;
+            if (existingStudent?.user_id) return res.status(400).json({ error: 'รหัสนักเรียนนี้ถูกผูกกับบัญชีแล้ว' });
+        }
+
+        const userId = await createUser({ username, email: userEmail, password, role: normalizedRole });
+
+        if (normalizedRole === 'student') {
+            if (existingStudent) {
+                await pool.query('UPDATE students SET user_id = ?, full_name = ? WHERE student_id = ?', [userId, fullName, existingStudent.student_id]);
+            } else {
+                await pool.query('INSERT INTO students (user_id, student_code, full_name) VALUES (?, ?, ?)', [userId, studentCode, fullName]);
+            }
+        } else if (normalizedRole === 'teacher') {
+            await pool.query('INSERT INTO teachers (user_id, full_name) VALUES (?, ?)', [userId, fullName]);
+        }
+
+        const token = jwt.sign({ user_id: userId, username, role: normalizedRole }, JWT_SECRET, { expiresIn: '8h' });
+        res.json({ token, user: { user_id: userId, username, email: userEmail, role: normalizedRole } });
     } catch (err) {
         console.error('Register error:', err);
         res.status(500).json({ error: 'server error' });
@@ -75,16 +119,17 @@ app.post('/api/register', async (req, res) => {
 app.post('/api/login', async (req, res) => {
     try {
         const { usernameOrEmail, password } = req.body;
-        if (!usernameOrEmail || !password) return res.status(400).json({ error: 'ข้อมูลไม่ครบ' });
+        const identifier = normalizeIdentifier(usernameOrEmail);
+        if (!identifier || !password) return res.status(400).json({ error: 'กรุณากรอกข้อมูลให้ครบ' });
 
-        const user = await findUserByUsernameOrEmail(usernameOrEmail);
-        if (!user) return res.status(400).json({ error: 'ไม่พบผู้ใช้' });
+        const user = await findUserByLoginIdentifier(identifier);
+        if (!user) return res.status(400).json({ error: 'รหัสเข้าสู่ระบบหรือรหัสผ่านไม่ถูกต้อง' });
 
         // password_hash must exist in user record
         if (!user.password_hash) return res.status(500).json({ error: 'user has no password hash' });
 
         const ok = await bcrypt.compare(password, user.password_hash);
-        if (!ok) return res.status(400).json({ error: 'รหัสผ่านไม่ถูกต้อง' });
+        if (!ok) return res.status(400).json({ error: 'รหัสเข้าสู่ระบบหรือรหัสผ่านไม่ถูกต้อง' });
 
         const token = jwt.sign({ user_id: user.user_id, username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '8h' });
         res.json({ token, user: { user_id: user.user_id, username: user.username, email: user.email, role: user.role } });
@@ -497,7 +542,9 @@ app.post('/api/teacher/subjects/:id/co-teachers', authMiddleware, async (req, re
         if (!teacher_id) return res.status(400).json({ error: 'Missing teacher_id' });
 
         await pool.query(
-            'INSERT IGNORE INTO subject_teachers (subject_id, teacher_id, role) VALUES (?, ?, "co-teacher")',
+            `INSERT INTO subject_teachers (subject_id, teacher_id, role)
+             VALUES (?, ?, 'co-teacher')
+             ON CONFLICT DO NOTHING`,
             [subjectId, teacher_id]
         );
         res.json({ ok: true });
@@ -514,7 +561,7 @@ app.delete('/api/teacher/subjects/:id/co-teachers/:teacher_id', authMiddleware, 
         }
         const { id, teacher_id } = req.params;
         await pool.query(
-            'DELETE FROM subject_teachers WHERE subject_id = ? AND teacher_id = ? AND role != "primary"',
+            "DELETE FROM subject_teachers WHERE subject_id = ? AND teacher_id = ? AND role <> 'primary'",
             [id, teacher_id]
         );
         res.json({ ok: true });
@@ -1049,7 +1096,7 @@ app.get('/api/student/summary', authMiddleware, async (req, res) => {
     const [[today]] = await pool.query(`
     SELECT COUNT(*) AS total
     FROM sessions
-    WHERE date = CURDATE()
+    WHERE date = CURRENT_DATE
   `);
 
     /* 2️⃣ เช็กชื่อล่าสุด */
@@ -1084,7 +1131,7 @@ app.get('/api/student/summary/by-subject', authMiddleware, async (req, res) => {
 
     /* 1️⃣ วันนี้เรียนกี่คาบ (สำหรับวิชานี้) */
     const [[today]] = await pool.query(`
-        SELECT COUNT(*) AS total FROM sessions WHERE date = CURDATE() AND subject_id = ?
+        SELECT COUNT(*) AS total FROM sessions WHERE date = CURRENT_DATE AND subject_id = ?
     `, [subject_id]);
 
     /* 2️⃣ เช็กชื่อล่าสุด (สำหรับวิชานี้) */
@@ -1208,7 +1255,9 @@ app.post('/api/student/enroll-subject', authMiddleware, async (req, res) => {
         if (!student) return res.status(404).json({ error: 'Student profile not found' });
 
         await pool.query(
-            'INSERT IGNORE INTO enrollments (student_id, subject_id) VALUES (?, ?)',
+            `INSERT INTO enrollments (student_id, subject_id)
+             VALUES (?, ?)
+             ON CONFLICT DO NOTHING`,
             [student.student_id, subject_id]
         );
         res.json({ ok: true });

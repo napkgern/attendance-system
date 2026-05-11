@@ -4,76 +4,108 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Login / Register - Fingerprint Attendance</title>
+    <title>เข้าสู่ระบบ - Fingerprint Attendance</title>
     <link rel="stylesheet" href="/auth.css">
 </head>
 
 <body>
-    <div class="wrap">
-        <div class="hero">
-            <h1>Fingerprint Attendance System</h1>
-            <p>ตัวอย่างสำหรับโปรเจกต์ — ลงชื่อเข้าใช้หรือสมัครเพื่อทดลองใช้งาน</p>
-            <img src="/Classroom.jpg" alt="classroom">
-        </div>
+    <main class="wrap">
+        <section class="hero" aria-labelledby="hero-title">
+            <div>
+                <p class="eyebrow">Fingerprint Attendance</p>
+                <h1 id="hero-title">ระบบเช็กชื่อด้วยลายนิ้วมือสำหรับห้องเรียน</h1>
+                <p>ลงชื่อเข้าใช้เพื่อดูคาบเรียน จัดการรายวิชา และบันทึกเวลาเข้าเรียนได้จากเครื่องสแกนประจำห้อง</p>
+            </div>
+            <img src="/Classroom.jpg" alt="ห้องเรียน">
+        </section>
 
-        <div class="card" id="auth-card">
-            <div class="tabs">
-                <div class="tab active" id="tab-login">Login</div>
-                <div class="tab" id="tab-register">Register</div>
+        <section class="card" id="auth-card" aria-label="เข้าสู่ระบบและสมัครสมาชิก">
+            <div class="tabs" role="tablist" aria-label="เลือกหน้าฟอร์ม">
+                <button class="tab active" id="tab-login" type="button">เข้าสู่ระบบ</button>
+                <button class="tab" id="tab-register" type="button">สมัครสมาชิก</button>
             </div>
 
-            <div id="login-form">
+            <form id="login-form" novalidate>
                 <div class="form-row">
-                    <label for="login-email">อีเมล / Username</label>
-                    <input id="login-email" placeholder="example@school.com or username">
+                    <label for="login-identifier" id="login-identifier-label">Username</label>
+                    <input id="login-identifier" name="identifier" autocomplete="username" placeholder="เช่น student01 หรือ teacher01">
+                    <div class="field-error" id="login-identifier-error"></div>
                 </div>
+
                 <div class="form-row">
                     <label for="login-password">รหัสผ่าน</label>
-                    <input id="login-password" type="password" placeholder="password">
+                    <div class="password-field">
+                        <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="กรอกรหัสผ่าน">
+                        <button class="toggle-password" type="button" data-target="login-password">แสดง</button>
+                    </div>
+                    <div class="field-error" id="login-password-error"></div>
                 </div>
-                <button class="btn" id="btn-login">เข้าสู่ระบบ</button>
-                <div class="small" id="link-to-register" style="cursor: pointer; color: #3b82f6; text-decoration: underline;">ยังไม่มีบัญชี? คลิก Register</div>
-                <div id="login-msg" class="hint"></div>
-            </div>
 
-            <div id="register-form" style="display:none">
-                <div class="form-row">
-                    <label for="reg-name">ชื่อ–สกุล</label>
-                    <input id="reg-name" placeholder="ชื่อ–สกุล">
+                <button class="btn" id="btn-login" type="submit">เข้าสู่ระบบ</button>
+                <button class="text-link" id="link-to-register" type="button">ยังไม่มีบัญชี? สมัครสมาชิก</button>
+                <div id="login-msg" class="hint" aria-live="polite"></div>
+            </form>
+
+            <form id="register-form" novalidate hidden>
+                <div class="role-switch" aria-label="เลือกบทบาทสำหรับสมัครสมาชิก">
+                    <button class="role-option active" type="button" data-register-role="student">นักเรียน</button>
+                    <button class="role-option" type="button" data-register-role="teacher">ครู</button>
                 </div>
+
+                <div class="form-row">
+                    <label for="reg-name">ชื่อ-สกุล</label>
+                    <input id="reg-name" name="name" autocomplete="name" placeholder="เช่น สมชาย ใจดี">
+                    <div class="field-error" id="reg-name-error"></div>
+                </div>
+
                 <div class="form-row">
                     <label for="reg-username">Username</label>
-                    <input id="reg-username" placeholder="somchai">
+                    <input id="reg-username" name="username" autocomplete="username" placeholder="เช่น student01 หรือ teacher01">
+                    <div class="field-error" id="reg-username-error"></div>
                 </div>
+
+                <div class="form-row" id="student-fields">
+                    <label for="reg-studentid">รหัสนักเรียน</label>
+                    <input id="reg-studentid" name="student_code" autocomplete="username" placeholder="เช่น 65001">
+                    <div class="field-error" id="reg-studentid-error"></div>
+                </div>
+
                 <div class="form-row">
-                    <label for="reg-email">อีเมล</label>
-                    <input id="reg-email" placeholder="example@school.com">
+                    <label for="reg-email" id="reg-email-label">อีเมล (ไม่บังคับ)</label>
+                    <input id="reg-email" name="email" autocomplete="email" placeholder="student@school.ac.th">
+                    <div class="field-error" id="reg-email-error"></div>
                 </div>
+
+                <div class="form-row" id="teacher-fields" hidden>
+                    <label for="reg-passcode">รหัสยืนยันสำหรับครู</label>
+                    <input id="reg-passcode" name="teacher_passcode" type="password" autocomplete="off" placeholder="ขอรหัสนี้จากผู้ดูแลระบบ">
+                    <div class="field-error" id="reg-passcode-error"></div>
+                </div>
+
                 <div class="form-row">
                     <label for="reg-password">รหัสผ่าน</label>
-                    <input id="reg-password" type="password" placeholder="password">
+                    <div class="password-field">
+                        <input id="reg-password" name="password" type="password" autocomplete="new-password" placeholder="อย่างน้อย 8 ตัวอักษร">
+                        <button class="toggle-password" type="button" data-target="reg-password">แสดง</button>
+                    </div>
+                    <div class="field-error" id="reg-password-error"></div>
                 </div>
+
                 <div class="form-row">
-                    <label for="reg-role">บทบาท</label>
-                    <select id="reg-role">
-                        <option value="student">Student</option>
-                        <option value="teacher">Teacher</option>
-                    </select>
+                    <label for="reg-confirm-password">ยืนยันรหัสผ่าน</label>
+                    <div class="password-field">
+                        <input id="reg-confirm-password" name="confirm_password" type="password" autocomplete="new-password" placeholder="กรอกรหัสผ่านอีกครั้ง">
+                        <button class="toggle-password" type="button" data-target="reg-confirm-password">แสดง</button>
+                    </div>
+                    <div class="field-error" id="reg-confirm-error"></div>
                 </div>
-                <div class="form-row" id="student-fields">
-                    <label for="reg-studentid">รหัสนักเรียน (ถ้าเป็น Student)</label>
-                    <input id="reg-studentid" placeholder="เช่น 101">
-                </div>
-                <div class="form-row" id="teacher-fields" style="display:none">
-                    <label for="reg-passcode">รหัสผ่านสำหรับลงทะเบียนเป็นครู</label>
-                    <input id="reg-passcode" type="password" placeholder="Teacher Passcode">
-                </div>
-                <button class="btn" id="btn-register">สมัคร</button>
-                <div class="small" id="link-to-login" style="cursor: pointer; color: #3b82f6; text-decoration: underline;">มีบัญชีแล้ว? คลิก Login</div>
-                <div id="reg-msg" class="hint"></div>
-            </div>
-        </div>
-    </div>
+
+                <button class="btn" id="btn-register" type="submit">สมัครสมาชิก</button>
+                <button class="text-link" id="link-to-login" type="button">มีบัญชีแล้ว? เข้าสู่ระบบ</button>
+                <div id="reg-msg" class="hint" aria-live="polite"></div>
+            </form>
+        </section>
+    </main>
 
     <script src="/auth.js"></script>
 </body>

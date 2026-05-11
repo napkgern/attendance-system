@@ -1,191 +1,306 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap');
 
 :root {
-    --primary: #4f46e5;
-    --primary-hover: #4338ca;
-    --accent: #eef2ff;
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --accent: #0f766e;
+    --bg: #f6f8fb;
     --card: #ffffff;
-    --bg: #f8fafc;
-    --text: #0f172a;
+    --text: #102033;
     --muted: #64748b;
-    --success: #10b981;
-    --success-hover: #059669;
-    --border: #e2e8f0;
-    --radius: 16px;
-    --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+    --border: #dbe3ee;
+    --field: #f8fafc;
+    --danger: #dc2626;
+    --danger-bg: #fef2f2;
+    --success: #047857;
+    --success-bg: #ecfdf5;
+    --radius: 8px;
+    --shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+}
+
+* {
+    box-sizing: border-box;
 }
 
 body {
     margin: 0;
+    min-height: 100vh;
     font-family: 'Outfit', 'Noto Sans Thai', sans-serif;
-    background: var(--bg);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(246, 248, 251, 0.95)),
+        var(--bg);
     color: var(--text);
-    display: grid;
-    place-items: center;
-    height: 100vh;
     -webkit-font-smoothing: antialiased;
 }
 
 .wrap {
-    width: 980px;
+    width: min(1040px, calc(100% - 40px));
+    min-height: 100vh;
+    margin: 0 auto;
     display: grid;
-    grid-template-columns: 1fr 420px;
+    grid-template-columns: minmax(0, 1fr) 430px;
     gap: 32px;
     align-items: center;
+    padding: 40px 0;
 }
 
-@media (max-width:1024px) {
-    .wrap {
-        grid-template-columns: 1fr;
-        width: 100%;
-        padding: 24px;
-        max-width: 500px;
-    }
+.hero,
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
 }
 
 .hero {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 32px;
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--border);
+    overflow: hidden;
+}
+
+.hero > div {
+    padding: 30px 30px 20px;
+}
+
+.eyebrow {
+    margin: 0 0 8px;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 700;
 }
 
 .hero h1 {
-    margin: 0 0 12px 0;
-    font-size: 28px;
+    margin: 0 0 12px;
+    color: var(--text);
+    font-size: 30px;
+    line-height: 1.25;
     font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--primary);
+    letter-spacing: 0;
 }
 
 .hero p {
+    margin: 0;
     color: var(--muted);
-    margin-bottom: 24px;
     font-size: 16px;
-    line-height: 1.5;
+    line-height: 1.65;
 }
 
 .hero img {
+    display: block;
     width: 100%;
-    height: 240px;
+    height: 270px;
     object-fit: cover;
-    border-radius: 12px;
-    margin-bottom: 0;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
 .card {
-    background: var(--card);
+    padding: 26px;
+}
+
+.tabs,
+.role-switch {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    background: #eef3f8;
     border-radius: var(--radius);
-    padding: 28px;
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--border);
+    padding: 5px;
 }
 
 .tabs {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 24px;
-    background: #f1f5f9;
-    padding: 6px;
-    border-radius: 12px;
+    margin-bottom: 22px;
 }
 
-.tab {
-    flex: 1;
-    padding: 10px;
-    border-radius: 8px;
-    text-align: center;
-    cursor: pointer;
-    border: none;
-    font-weight: 500;
+.role-switch {
+    margin-bottom: 18px;
+}
+
+.tab,
+.role-option {
+    min-height: 42px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
     color: var(--muted);
-    transition: all 0.2s ease;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
 }
 
-.tab.active {
-    background: white;
+.tab.active,
+.role-option.active {
+    background: #ffffff;
     color: var(--text);
-    font-weight: 700;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
 }
 
 .form-row {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    margin-bottom: 16px;
+    gap: 7px;
+    margin-bottom: 15px;
 }
 
 label {
-    font-size: 13px;
-    font-weight: 600;
     color: var(--text);
+    font-size: 13px;
+    font-weight: 700;
 }
 
-input, select {
-    padding: 12px 14px;
-    border-radius: 10px;
+input {
+    width: 100%;
+    min-height: 46px;
+    padding: 12px 13px;
     border: 1px solid var(--border);
-    font-family: inherit;
-    font-size: 14px;
+    border-radius: var(--radius);
+    background: var(--field);
+    color: var(--text);
+    font: inherit;
+    font-size: 15px;
     outline: none;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    background: #f8fafc;
+    transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
 }
 
-input:focus, select:focus {
-    background: white;
+input::placeholder {
+    color: #94a3b8;
+}
+
+input:focus {
+    background: #ffffff;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+}
+
+.password-field {
+    position: relative;
+}
+
+.password-field input {
+    padding-right: 76px;
+}
+
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    min-width: 56px;
+    min-height: 32px;
+    border: 0;
+    border-radius: 6px;
+    background: #e2e8f0;
+    color: #334155;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
 }
 
 .btn {
     width: 100%;
-    padding: 14px;
-    border-radius: 10px;
-    border: none;
-    background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
-    color: white;
-    font-weight: 600;
+    min-height: 48px;
+    margin-top: 4px;
+    border: 0;
+    border-radius: var(--radius);
+    background: var(--primary);
+    color: #ffffff;
+    font: inherit;
     font-size: 15px;
+    font-weight: 700;
     cursor: pointer;
-    font-family: inherit;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
-    margin-top: 8px;
+    transition: background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+    box-shadow: 0 10px 18px rgba(37, 99, 235, 0.2);
 }
 
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+.btn:hover:not(:disabled) {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
 }
 
-.small {
-    font-size: 13px;
-    color: var(--muted);
-    text-align: center;
-    margin-top: 16px;
-    cursor: pointer;
+.btn:disabled {
+    cursor: wait;
+    opacity: 0.72;
 }
 
-.small:hover {
+.text-link {
+    display: block;
+    width: 100%;
+    margin: 15px 0 0;
+    border: 0;
+    background: transparent;
     color: var(--primary);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.text-link:hover {
+    color: var(--primary-hover);
     text-decoration: underline;
 }
 
+.field-error {
+    min-height: 17px;
+    color: var(--danger);
+    font-size: 12px;
+    line-height: 1.35;
+}
+
 .hint {
+    display: none;
+    margin-top: 13px;
+    padding: 10px 12px;
+    border-radius: var(--radius);
+    background: var(--danger-bg);
+    color: var(--danger);
     font-size: 13px;
-    color: #ef4444;
+    line-height: 1.45;
     text-align: center;
-    margin-top: 12px;
-    background: #fee2e2;
-    padding: 8px;
-    border-radius: 6px;
-    display: none; /* Shows via JS */
 }
 
 .hint:not(:empty) {
     display: block;
+}
+
+.hint.success {
+    background: var(--success-bg);
+    color: var(--success);
+}
+
+[hidden] {
+    display: none !important;
+}
+
+@media (max-width: 920px) {
+    .wrap {
+        width: min(520px, calc(100% - 28px));
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 24px 0;
+        align-items: start;
+    }
+
+    .hero img {
+        height: 190px;
+    }
+}
+
+@media (max-width: 460px) {
+    .wrap {
+        width: calc(100% - 22px);
+        padding: 14px 0;
+    }
+
+    .card,
+    .hero > div {
+        padding: 20px;
+    }
+
+    .hero h1 {
+        font-size: 24px;
+    }
+
+    .role-option {
+        font-size: 13px;
+    }
 }

@@ -87,7 +87,7 @@ router.get('/summary', authMiddleware, async (req, res) => {
     const [[today]] = await pool.query(`
         SELECT COUNT(*) AS total
         FROM sessions
-        WHERE date = CURDATE()
+        WHERE date = CURRENT_DATE
     `);
 
     /* 2. Last check-in */
